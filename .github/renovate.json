@@ -1,0 +1,62 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    ":semanticCommits",
+    "group:monorepos",
+    ":prImmediately",
+    ":prConcurrentLimitNone",
+    ":prHourlyLimitNone"
+  ],
+  "assigneesFromCodeOwners": true,
+  "dependencyDashboard": true,
+  "labels": [
+    "dependencies",
+    "renovate"
+  ],
+  "automerge": true,
+  "automergeType": "pr",
+  "automergeStrategy": "rebase",
+  "platformAutomerge": true,
+  "customManagers": [
+    {
+      "customType": "regex",
+      "matchStringsStrategy": "any",
+      "fileMatch": [
+        "(^|/)Dockerfile$"
+      ],
+      "matchStrings": [
+        ".*?--git\\shttps://github.com/(?<depName>.*?)\\.git\\s--tag\\s(?<currentValue>([0-9\\.]*)?)*"
+      ],
+      "datasourceTemplate": "github-tags"
+    },
+    {
+      "customType": "regex",
+      "matchStringsStrategy": "any",
+      "fileMatch": [
+        "(^|/)build_pr_image\\.yml$",
+        "(^|/)build_release-image\\.yml$"
+      ],
+      "matchStrings": [
+        ".*?afrima/anki-sync-server:(?<currentValue>([0-9\\.]*)?)*"
+      ],
+      "datasourceTemplate": "github-tags",
+      "depNameTemplate": "ankitects/anki",
+      "packageNameTemplate": "ankitects/anki"
+    }
+  ],
+  "commitMessageAction": "bump",
+  "commitMessageExtra": "from {{{currentValue}}} to {{#if isMajor}}{{{newMajor}}}{{else}}{{#if isSingleVersion}}{{{newVersion}}}{{else}}{{{newValue}}}{{/if}}{{/if}}",
+  "commitBodyTable": true,
+  "pre-commit": {
+    "enabled": true
+  },
+  "packageRules": [
+    {
+      "matchManagers": [
+        "regex"
+      ],
+      "semanticCommitType": "fix",
+      "commitMessageExtra": "from {{{currentValue}}} to {{#if isMajor}}{{{newMajor}}}{{else}}{{#if isSingleVersion}}{{{newVersion}}}{{else}}{{{newValue}}}{{/if}}{{/if}}"
+    }
+  ]
+}

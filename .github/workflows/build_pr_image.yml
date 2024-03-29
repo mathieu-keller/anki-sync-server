@@ -1,0 +1,32 @@
+name: Build PR Image
+
+on:
+  pull_request:
+
+jobs:
+  build-image:
+    name: build image
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_TOKEN }}
+      - name: build image
+        run: docker build -t afrima/anki-sync-server:2.1.66-rc .
+      - name: push image
+        run: docker push afrima/anki-sync-server:2.1.66-rc
+  approve:
+    name: approve
+    runs-on: ubuntu-22.04
+    needs: [  build-image ]
+    if: ${{ github.event_name == 'pull_request' && github.event.pull_request.user.login == 'renovate[bot]' }}
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Approve PR if it has the trusted label
+        run: gh pr review ${{ github.event.number }} -a
