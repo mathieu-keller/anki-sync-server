@@ -17,6 +17,6 @@ jobs:
           username: ${{ secrets.DOCKER_USER }}
           password: ${{ secrets.DOCKER_TOKEN }}
       - name: build image
-        run: docker build -t afrima/anki-sync-server:2.1.65 .
+        run: docker build -t afrima/anki-sync-server:23.12.1 .
       - name: push image
-        run: docker push afrima/anki-sync-server:2.1.65
+        run: docker push afrima/anki-sync-server:23.12.1
