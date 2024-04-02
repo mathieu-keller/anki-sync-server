@@ -27,7 +27,7 @@
       "matchStrings": [
         ".*?--git\\shttps://github.com/(?<depName>.*?)\\.git\\s--tag\\s(?<currentValue>([0-9\\.]*)?)*"
       ],
-      "datasourceTemplate": "github-releases"
+      "datasourceTemplate": "github-tags"
     },
     {
       "customType": "regex",
@@ -40,7 +40,7 @@
       "matchStrings": [
         ".*?afrima/anki-sync-server:(?<currentValue>([0-9\\.]*)?)*"
       ],
-      "datasourceTemplate": "github-releases",
+      "datasourceTemplate": "github-tags",
       "depNameTemplate": "ankitects/anki",
       "packageNameTemplate": "ankitects/anki"
     }
