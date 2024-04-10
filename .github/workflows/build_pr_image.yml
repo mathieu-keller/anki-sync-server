@@ -15,9 +15,9 @@ jobs:
           username: ${{ secrets.DOCKER_USER }}
           password: ${{ secrets.DOCKER_TOKEN }}
       - name: build image
-        run: docker build -t afrima/anki-sync-server:24.04-rc .
+        run: docker build -t afrima/anki-sync-server:23.12.1-rc .
       - name: push image
-        run: docker push afrima/anki-sync-server:24.04-rc
+        run: docker push afrima/anki-sync-server:23.12.1-rc
   approve:
     name: approve
     runs-on: ubuntu-22.04

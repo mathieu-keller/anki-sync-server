@@ -17,21 +17,24 @@
   "automergeType": "pr",
   "automergeStrategy": "rebase",
   "platformAutomerge": true,
-  "customManagers": [
+  "packageRules": [
     {
-      "customType": "regex",
-      "matchStringsStrategy": "any",
+      "matchDatasources": ["github-releases"],
+      "versioning": "regex:^(?<major>\\d+)(\\.(?<minor>\\d+))(\\.(?<patch>\\d+))$"
+    }
+  ],
+  "regexManagers": [
+    {
       "fileMatch": [
         "(^|/)Dockerfile$"
       ],
       "matchStrings": [
         ".*?--git\\shttps://github.com/(?<depName>.*?)\\.git\\s--tag\\s(?<currentValue>([0-9\\.]*)?)*"
       ],
-      "datasourceTemplate": "github-tags"
+      "versioningTemplate": "semver",
+      "datasourceTemplate": "github-releases"
     },
     {
-      "customType": "regex",
-      "matchStringsStrategy": "any",
       "fileMatch": [
         "(^|/)build_pr_image\\.yml$",
         "(^|/)build_release-image\\.yml$",
@@ -40,9 +43,10 @@
       "matchStrings": [
         ".*?afrima/anki-sync-server:(?<currentValue>([0-9\\.]*)?)*"
       ],
-      "datasourceTemplate": "github-tags",
-      "depNameTemplate": "ankitects/anki",
-      "packageNameTemplate": "ankitects/anki"
+      "versioningTemplate": "semver",
+      "datasourceTemplate": "github-releases",
+      "packageNameTemplate": "ankitects/anki",
+      "depNameTemplate": "ankitects/anki"
     }
   ]
 }
