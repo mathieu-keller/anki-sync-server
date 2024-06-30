@@ -7,7 +7,7 @@ Documentation can be found [here](https://docs.ankiweb.net/sync-server.html)
 version: "3"
 services:
   server:
-    image: afrima/anki-sync-server:24.06.2
+    image: afrima/anki-sync-server:24.06.3
     container_name: anki-sync-server
     environment:
       - SYNC_USER1=test_user_name:test_user_password
