@@ -6,7 +6,7 @@ on:
 jobs:
   build-image:
     name: build image
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - name: Login to Docker Hub
@@ -20,7 +20,7 @@ jobs:
         run: docker push afrima/anki-sync-server:24.06.3-rc
   approve:
     name: approve
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     needs: [  build-image ]
     if: ${{ github.event_name == 'pull_request' && github.event.pull_request.user.login == 'renovate[bot]' }}
     env:
