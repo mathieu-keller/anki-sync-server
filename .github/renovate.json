@@ -19,16 +19,21 @@
   "platformAutomerge": true,
   "packageRules": [
     {
-      "matchDatasources": ["github-releases"],
+      "matchDatasources": [
+        "github-releases"
+      ],
       "versioning": "regex:^(?<major>\\d+)(\\.(?<minor>\\d+))(\\.(?<patch>\\d+))$"
     },
     {
-      "matchDatasources": ["github-releases"],
+      "matchDatasources": [
+        "github-releases"
+      ],
       "versioning": "regex:^(?<major>\\d+)(\\.(?<minor>\\d+))$"
     }
   ],
-  "regexManagers": [
+  "customManagers": [
     {
+      "customType": "regex",
       "fileMatch": [
         "(^|/)Dockerfile$"
       ],
@@ -39,6 +44,7 @@
       "datasourceTemplate": "github-releases"
     },
     {
+      "customType": "regex",
       "fileMatch": [
         "(^|/)build_pr_image\\.yml$",
         "(^|/)build_release-image\\.yml$",
