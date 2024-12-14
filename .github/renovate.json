@@ -32,7 +32,18 @@
         "(^|/)Dockerfile$"
       ],
       "matchStrings": [
-        ".*?--git\\shttps://github.com/(?<depName>.*?)\\.git\\s--tag\\s(?<currentValue>([0-9\\.]*)?)*"
+        ".*?org\\.opencontainers\\.image\\.base\\.name=\\\"(?<depName>[a-zA-Z\\.\\/\\-0-9]*):(?<currentValue>[a-zA-Z\\.\\/\\-0-9]*)\\\".*org\\.opencontainers\\.image\\.base\\.digest=\"(?<currentDigest>sha256:[a-f0-9]*)\".*"
+      ],
+      "datasourceTemplate": "docker",
+      "versioningTemplate": "docker"
+    },
+    {
+      "customType": "regex",
+      "fileMatch": [
+        "(^|/)Dockerfile$"
+      ],
+      "matchStrings": [
+        ".*?--git\\shttps://github.com/(?<depName>.*?)\\.git\\s--tag\\s(?<currentValue>([0-9\\.]*)?).*"
       ],
       "versioningTemplate": "semver",
       "datasourceTemplate": "github-releases"
@@ -42,10 +53,13 @@
       "fileMatch": [
         "(^|/)build_pr_image\\.yml$",
         "(^|/)build_release-image\\.yml$",
-        "(^|/)README\\.md$"
+        "(^|/)README\\.md$",
+        "(^|/)Dockerfile$"
       ],
       "matchStrings": [
-        ".*?afrima/anki-sync-server:(?<currentValue>([0-9\\.]*)?)*"
+        ".*?afrima/anki-sync-server:(?<currentValue>([0-9\\.]*)?).*",
+        ".*?org\\.opencontainers\\.image\\.version=\"(?<currentValue>([0-9\\.]*)?)\".*",
+        ".*?org\\.opencontainers\\.image\\.revision=\"(?<currentValue>([0-9\\.]*)?)\".*"
       ],
       "versioningTemplate": "semver",
       "datasourceTemplate": "github-releases",
