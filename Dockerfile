@@ -5,7 +5,7 @@ RUN apt update \
     && apt install -y protobuf-compiler libprotobuf-dev \
     && cargo install --git https://github.com/ankitects/anki.git --tag 24.11 anki-sync-server
 
-FROM gcr.io/distroless/static-debian12:nonroot@sha256:6cd937e9155bdfd805d1b94e037f9d6a899603306030936a3b11680af0c2ed58
+FROM gcr.io/distroless/cc-debian12:nonroot@sha256:594b5200fd1f06d17a877ebee16d4af84a9a7ab83c898632a2d5609c0593cbab
 
 ARG NOW
 
@@ -20,7 +20,7 @@ LABEL org.opencontainers.image.created=$NOW \
       org.opencontainers.image.revision="24.11" \
       org.opencontainers.image.licenses="GNU AGPL-3.0-or-later" \
       org.opencontainers.image.vendor="Ankitects (Original Source Code); Docker Image by Mathieu Keller" \
-      org.opencontainers.image.base.name="gcr.io/distroless/static-debian12:nonroot" org.opencontainers.image.base.digest="sha256:6cd937e9155bdfd805d1b94e037f9d6a899603306030936a3b11680af0c2ed58"
+      org.opencontainers.image.base.name="gcr.io/distroless/cc-debian12:nonroot" org.opencontainers.image.base.digest="sha256:594b5200fd1f06d17a877ebee16d4af84a9a7ab83c898632a2d5609c0593cbab"
 
 
 COPY --from=build-env /usr/local/cargo/bin/anki-sync-server /
