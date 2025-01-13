@@ -9,7 +9,7 @@ RUN apt update \
 RUN cargo install --git https://github.com/ankitects/anki.git --tag 24.11 anki-sync-server --target x86_64-unknown-linux-musl
 
 
-FROM gcr.io/distroless/static-debian12:nonroot@sha256:6cd937e9155bdfd805d1b94e037f9d6a899603306030936a3b11680af0c2ed58
+FROM gcr.io/distroless/static-debian12:nonroot@sha256:6ec5aa99dc335666e79dc64e4a6c8b89c33a543a1967f20d360922a80dd21f02
 
 ARG NOW
 
@@ -24,7 +24,7 @@ LABEL org.opencontainers.image.created=$NOW \
       org.opencontainers.image.revision="24.11" \
       org.opencontainers.image.licenses="GNU AGPL-3.0-or-later" \
       org.opencontainers.image.vendor="Ankitects (Original Source Code); Docker Image by Mathieu Keller" \
-      org.opencontainers.image.base.name="gcr.io/distroless/static-debian12:nonroot" org.opencontainers.image.base.digest="sha256:6cd937e9155bdfd805d1b94e037f9d6a899603306030936a3b11680af0c2ed58"
+      org.opencontainers.image.base.name="gcr.io/distroless/static-debian12:nonroot" org.opencontainers.image.base.digest="sha256:6ec5aa99dc335666e79dc64e4a6c8b89c33a543a1967f20d360922a80dd21f02"
 
 COPY --from=build-env /usr/local/cargo/bin/anki-sync-server /
 CMD ["/anki-sync-server"]
