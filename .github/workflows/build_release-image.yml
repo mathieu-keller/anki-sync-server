@@ -11,14 +11,29 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-      - name: Login to Docker Hub
+      - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USER }}
           password: ${{ secrets.DOCKER_TOKEN }}
-      - name: build image
-        run: docker build -t afrima/anki-sync-server:24.11 -t afrima/anki-sync-server:latest --build-arg NOW="$(date -u +"%Y-%m-%dT%H:%M:%SZ")" .
-      - name: Wait for healthchecks
-        run: docker run -e SYNC_USER1=test_user_name:test_user_password -d afrima/anki-sync-server:latest | timeout 60s sh -c 'until docker ps | grep afrima/anki-sync-server:latest | grep -q healthy; do echo "Waiting for container to be healthy..."; sleep 2; done'
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Get Current Date
+        id: get_date
+        run: echo "::set-output name=now::$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          platforms: linux/amd64, linux/arm64
+          push: false
+          tags: afrima/anki-sync-server:24.11, afrima/anki-sync-server:latest
+          build-args: |
+            NOW=${{ steps.get_date.outputs.now }}
+      - name: Wait for healthchecks amd64
+        run: docker run --rm --platform linux/amd64 -e SYNC_USER1=test_user_name:test_user_password -d afrima/anki-sync-server:latest | timeout 60s sh -c 'until docker ps | grep afrima/anki-sync-server:latest | grep -q healthy; do echo "Waiting for container to be healthy..."; sleep 2; done'
+      - name: Wait for healthchecks arm64
+        run: docker run --rm --platform linux/arm64 -e SYNC_USER1=test_user_name:test_user_password -d afrima/anki-sync-server:latest | timeout 60s sh -c 'until docker ps | grep afrima/anki-sync-server:latest | grep -q healthy; do echo "Waiting for container to be healthy..."; sleep 2; done'
       - name: push image
         run: docker push afrima/anki-sync-server --all-tags
