@@ -1,12 +1,19 @@
 FROM rust:1.84.0 as build-env
 WORKDIR /app
 
-RUN apt update \
+ARG TARGETPLATFORM
+ARG TARGETARCH
+
+RUN echo "Building for TARGETPLATFORM: $TARGETPLATFORM, TARGETARCH: $TARGETARCH" \
+    && if [ "$TARGETARCH" = "amd64" ]; then RUST_TARGET="x86_64-unknown-linux-musl"; \
+    elif [ "$TARGETARCH" = "arm64" ]; then RUST_TARGET="aarch64-unknown-linux-musl"; \
+    else echo "Unsupported architecture: $TARGETARCH" && exit 1; fi \
+    && echo "Using RUST_TARGET: $RUST_TARGET" \
+    && apt update \
     && apt upgrade -y \
     && apt install -y protobuf-compiler libprotobuf-dev musl-tools \
-    && rustup target add x86_64-unknown-linux-musl
-
-RUN cargo install --git https://github.com/ankitects/anki.git --tag 24.11 anki-sync-server --target x86_64-unknown-linux-musl
+    && rustup target add $RUST_TARGET \
+    && cargo install --git https://github.com/ankitects/anki.git --tag 24.11 anki-sync-server --target $RUST_TARGET
 
 
 FROM gcr.io/distroless/static-debian12:nonroot@sha256:6ec5aa99dc335666e79dc64e4a6c8b89c33a543a1967f20d360922a80dd21f02
