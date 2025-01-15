@@ -15,9 +15,9 @@ jobs:
           username: ${{ secrets.DOCKER_USER }}
           password: ${{ secrets.DOCKER_TOKEN }}
       - name: build image
-        run: docker build -t afrima/anki-sync-server:24.11-rc --build-arg NOW="$(date -u +"%Y-%m-%dT%H:%M:%SZ")" .
+        run: docker build -t afrima/anki-sync-server:24.11-rc -t afrima/anki-sync-server:latest-rc --build-arg NOW="$(date -u +"%Y-%m-%dT%H:%M:%SZ")" .
       - name: push image
-        run: docker push afrima/anki-sync-server:24.11-rc
+        run: docker push afrima/anki-sync-server --all-tags
   approve:
     name: approve
     runs-on: ubuntu-24.04
