@@ -27,4 +27,8 @@ LABEL org.opencontainers.image.created=$NOW \
       org.opencontainers.image.base.name="gcr.io/distroless/static-debian12:nonroot" org.opencontainers.image.base.digest="sha256:6ec5aa99dc335666e79dc64e4a6c8b89c33a543a1967f20d360922a80dd21f02"
 
 COPY --from=build-env /usr/local/cargo/bin/anki-sync-server /
+
+HEALTHCHECK --interval=15s --timeout=5s --start-period=5s --retries=3 \
+CMD ["/anki-sync-server", "--healthcheck"]
+
 CMD ["/anki-sync-server"]
