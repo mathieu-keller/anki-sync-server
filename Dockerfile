@@ -6,7 +6,7 @@ RUN apt update \
     && apt install -y protobuf-compiler libprotobuf-dev musl-tools \
     && rustup target add x86_64-unknown-linux-musl
 
-RUN cargo install --git https://github.com/ankitects/anki.git --tag 25.02 anki-sync-server --target x86_64-unknown-linux-musl
+RUN cargo install --git https://github.com/ankitects/anki.git --tag 25.02.1 anki-sync-server --target x86_64-unknown-linux-musl
 
 
 FROM gcr.io/distroless/static-debian12:nonroot@sha256:6ec5aa99dc335666e79dc64e4a6c8b89c33a543a1967f20d360922a80dd21f02
@@ -20,8 +20,8 @@ LABEL org.opencontainers.image.created=$NOW \
       org.opencontainers.image.url="https://github.com/mathieu-keller/anki-sync-server" \
       org.opencontainers.image.source="https://github.com/ankitects/anki/tree/main" \
       org.opencontainers.image.documentation="https://docs.ankiweb.net/sync-server.html" \
-      org.opencontainers.image.version="25.02" \
-      org.opencontainers.image.revision="25.02" \
+      org.opencontainers.image.version="25.02.1" \
+      org.opencontainers.image.revision="25.02.1" \
       org.opencontainers.image.licenses="GNU AGPL-3.0-or-later" \
       org.opencontainers.image.vendor="Ankitects (Original Source Code); Docker Image by Mathieu Keller" \
       org.opencontainers.image.base.name="gcr.io/distroless/static-debian12:nonroot" org.opencontainers.image.base.digest="sha256:6ec5aa99dc335666e79dc64e4a6c8b89c33a543a1967f20d360922a80dd21f02"
