@@ -15,7 +15,7 @@ jobs:
           username: ${{ secrets.DOCKER_USER }}
           password: ${{ secrets.DOCKER_TOKEN }}
       - name: build image
-        run: docker build -t afrima/anki-sync-server:24.11-rc -t afrima/anki-sync-server:latest-rc --build-arg NOW="$(date -u +"%Y-%m-%dT%H:%M:%SZ")" .
+        run: docker build -t afrima/anki-sync-server:25.02.1-rc -t afrima/anki-sync-server:latest-rc --build-arg NOW="$(date -u +"%Y-%m-%dT%H:%M:%SZ")" .
       - name: Wait for healthchecks
         run: docker run -e SYNC_USER1=test_user_name:test_user_password -d afrima/anki-sync-server:latest-rc | timeout 60s sh -c 'until docker ps | grep afrima/anki-sync-server:latest-rc | grep -q healthy; do echo "Waiting for container to be healthy..."; sleep 2; done'
       - name: push image
