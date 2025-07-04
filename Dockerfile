@@ -1,4 +1,4 @@
-FROM rust:1.87.0 as build-env
+FROM rust:1.88.0 as build-env
 WORKDIR /app
 
 RUN apt update \
