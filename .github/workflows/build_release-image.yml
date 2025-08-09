@@ -11,14 +11,44 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USER }}
           password: ${{ secrets.DOCKER_TOKEN }}
-      - name: build image
-        run: docker build -t afrima/anki-sync-server:25.07.5 -t afrima/anki-sync-server:latest --build-arg NOW="$(date -u +"%Y-%m-%dT%H:%M:%SZ")" .
+
+      # Fast local build (amd64 only) for the healthcheck
+      - name: Build (amd64, load locally)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: linux/amd64
+          load: true
+          tags: |
+            afrima/anki-sync-server:25.07.5
+            afrima/anki-sync-server:latest
+          build-args: |
+            NOW=${{ github.event.pull_request.updated_at }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
       - name: Wait for healthchecks
         run: docker run -e SYNC_USER1=test_user_name:test_user_password -d afrima/anki-sync-server:latest | timeout 60s sh -c 'until docker ps | grep afrima/anki-sync-server:latest | grep -q healthy; do echo "Waiting for container to be healthy..."; sleep 2; done'
-      - name: push image
-        run: docker push afrima/anki-sync-server --all-tags
+
+      - name: Build & Push (multi-arch)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            afrima/anki-sync-server:25.07.5
+            afrima/anki-sync-server:latest
+          build-args: |
+            NOW=${{ github.event.pull_request.updated_at }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

@@ -4,34 +4,81 @@ on:
   pull_request:
 
 jobs:
-  build-image:
-    name: build image
+  build-test-and-push:
+    name: build, test, push
     runs-on: ubuntu-24.04
+
     steps:
       - uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USER }}
           password: ${{ secrets.DOCKER_TOKEN }}
-      - name: build image
-        run: docker build -t afrima/anki-sync-server:25.07.5-rc -t afrima/anki-sync-server:latest-rc --build-arg NOW="$(date -u +"%Y-%m-%dT%H:%M:%SZ")" .
+
+      # Fast local build (amd64 only) for the healthcheck
+      - name: Build (amd64, load locally)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: linux/amd64
+          load: true
+          tags: |
+            afrima/anki-sync-server:25.07.5-rc
+            afrima/anki-sync-server:latest-rc
+          build-args: |
+            NOW=${{ github.event.pull_request.updated_at }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
       - name: Wait for healthchecks
-        run: docker run -e SYNC_USER1=test_user_name:test_user_password -d afrima/anki-sync-server:latest-rc | timeout 60s sh -c 'until docker ps | grep afrima/anki-sync-server:latest-rc | grep -q healthy; do echo "Waiting for container to be healthy..."; sleep 2; done'
-      - name: push image
-        run: docker push afrima/anki-sync-server --all-tags
+        run: |
+          set -eux
+          docker run -e SYNC_USER1=test_user_name:test_user_password -d --name anki-sync-test afrima/anki-sync-server:latest-rc
+          # wait up to 60s for healthy
+          for i in $(seq 1 30); do
+            status=$(docker inspect -f '{{.State.Health.Status}}' anki-sync-test || echo starting)
+            [ "$status" = "healthy" ] && exit 0
+            echo "Health: $status (retry $i/30)"; sleep 2
+          done
+          echo "Container did not become healthy in time"
+          docker logs anki-sync-test || true
+          exit 1
+
+      # Multi-arch build & push (only after healthcheck passes)
+      - name: Build & Push (multi-arch)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            afrima/anki-sync-server:25.07.5-rc
+            afrima/anki-sync-server:latest-rc
+          build-args: |
+            NOW=${{ github.event.pull_request.updated_at }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
   approve:
     name: approve
     runs-on: ubuntu-24.04
-    needs: [ build-image ]
+    needs: [ build-test-and-push ]
     if: ${{ github.event_name == 'pull_request' && github.event.pull_request.user.login == 'renovate[bot]' }}
     env:
       GH_TOKEN: ${{ github.token }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
       - name: Approve PR
         run: gh pr review ${{ github.event.number }} -a
+
   merge:
     name: merge
     runs-on: ubuntu-24.04
@@ -40,7 +87,6 @@ jobs:
     env:
       GH_TOKEN: ${{ github.token }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: merge PR
+      - uses: actions/checkout@v4
+      - name: Merge PR
         run: gh pr merge ${{ github.event.number }} --admin

@@ -1,18 +1,37 @@
+# ---- build ----
 FROM rust:1.89.0 AS build-env
 WORKDIR /app
 
+# Will be provided by buildx
+ARG TARGETARCH
+
+# Needed for MUSL builds
 RUN apt-get update \
  && apt-get upgrade -y \
  && apt-get install -y --no-install-recommends protobuf-compiler libprotobuf-dev musl-tools ca-certificates \
- && rustup target add x86_64-unknown-linux-musl \
  && rm -rf /var/lib/apt/lists/*
 
+# Map Docker arch -> Rust MUSL target triple
+RUN case "$TARGETARCH" in \
+      "amd64")  echo x86_64-unknown-linux-musl  > /rust-target.txt ;; \
+      "arm64")  echo aarch64-unknown-linux-musl > /rust-target.txt ;; \
+      *)        echo "Unsupported TARGETARCH: $TARGETARCH" >&2; exit 1 ;; \
+    esac
+RUN rustup target add "$(cat /rust-target.txt)"
 
+# Allow bidi control codepoints in generated i18n (fixes the build on newer Rust)
 ENV RUSTFLAGS="-Atext_direction_codepoint_in_literal --cap-lints=warn"
+ENV CARGO_TERM_COLOR=never
+ENV CARGO_NET_GIT_FETCH_WITH_CLI=true
 
-RUN cargo install --locked --git https://github.com/ankitects/anki.git --tag 25.07.5 anki-sync-server --target x86_64-unknown-linux-musl
+# Build the sync server for the computed MUSL target
+RUN cargo install --locked \
+      --git https://github.com/ankitects/anki.git \
+      --tag 25.07.5 \
+      anki-sync-server \
+      --target "$(cat /rust-target.txt)"
 
-
+# ---- runtime ----
 FROM gcr.io/distroless/static-debian12:nonroot@sha256:cdf4daaf154e3e27cfffc799c16f343a384228f38646928a1513d925f473cb46
 
 ARG NOW
@@ -30,7 +49,8 @@ LABEL org.opencontainers.image.created=$NOW \
       org.opencontainers.image.vendor="Ankitects (Original Source Code); Docker Image by Mathieu Keller" \
       org.opencontainers.image.base.name="gcr.io/distroless/static-debian12:nonroot" org.opencontainers.image.base.digest="sha256:cdf4daaf154e3e27cfffc799c16f343a384228f38646928a1513d925f473cb46"
 
-COPY --from=build-env /usr/local/cargo/bin/anki-sync-server /
+# cargo installs to /usr/local/cargo/bin regardless of --target
+COPY --from=build-env /usr/local/cargo/bin/anki-sync-server /anki-sync-server
 
 HEALTHCHECK --interval=15s --timeout=5s --start-period=5s --retries=3 \
 CMD ["/anki-sync-server", "--healthcheck"]
