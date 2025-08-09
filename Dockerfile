@@ -1,12 +1,16 @@
 FROM rust:1.89.0 AS build-env
 WORKDIR /app
 
-RUN apt update \
-    && apt upgrade -y \
-    && apt install -y protobuf-compiler libprotobuf-dev musl-tools \
-    && rustup target add x86_64-unknown-linux-musl
+RUN apt-get update \
+ && apt-get upgrade -y \
+ && apt-get install -y --no-install-recommends protobuf-compiler libprotobuf-dev musl-tools ca-certificates \
+ && rustup target add x86_64-unknown-linux-musl \
+ && rm -rf /var/lib/apt/lists/*
 
-RUN cargo install --git https://github.com/ankitects/anki.git --tag 25.07.5 anki-sync-server --target x86_64-unknown-linux-musl
+
+ENV RUSTFLAGS="-Atext_direction_codepoint_in_literal --cap-lints=warn"
+
+RUN cargo install --locked --git https://github.com/ankitects/anki.git --tag 25.07.5 anki-sync-server --target x86_64-unknown-linux-musl
 
 
 FROM gcr.io/distroless/static-debian12:nonroot@sha256:cdf4daaf154e3e27cfffc799c16f343a384228f38646928a1513d925f473cb46
