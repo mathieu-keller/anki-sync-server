@@ -28,8 +28,8 @@
   "customManagers": [
     {
       "customType": "regex",
-      "fileMatch": [
-        "(^|/)Dockerfile$"
+      "managerFilePatterns": [
+        "/(^|/)Dockerfile$/"
       ],
       "matchStrings": [
         ".*?org\\.opencontainers\\.image\\.base\\.name=\\\"(?<depName>[a-zA-Z\\.\\/\\-0-9]*):(?<currentValue>[a-zA-Z\\.\\/\\-0-9]*)\\\".*org\\.opencontainers\\.image\\.base\\.digest=\"(?<currentDigest>sha256:[a-f0-9]*)\".*"
@@ -39,8 +39,8 @@
     },
     {
       "customType": "regex",
-      "fileMatch": [
-        "(^|/)Dockerfile$"
+      "managerFilePatterns": [
+        "/(^|/)Dockerfile$/"
       ],
       "matchStrings": [
         ".*?--git\\shttps://github.com/(?<depName>.*?)\\.git\\s--tag\\s(?<currentValue>([0-9\\.]*)?).*"
@@ -50,11 +50,11 @@
     },
     {
       "customType": "regex",
-      "fileMatch": [
-        "(^|/)build_pr_image\\.yml$",
-        "(^|/)build_release-image\\.yml$",
-        "(^|/)README\\.md$",
-        "(^|/)Dockerfile$"
+      "managerFilePatterns": [
+        "/(^|/)build_pr_image\\.yml$/",
+        "/(^|/)build_release-image\\.yml$/",
+        "/(^|/)README\\.md$/",
+        "/(^|/)Dockerfile$/"
       ],
       "matchStrings": [
         ".*?afrima/anki-sync-server:(?<currentValue>([0-9\\.]*)?).*",
