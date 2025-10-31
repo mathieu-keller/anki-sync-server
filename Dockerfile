@@ -1,5 +1,5 @@
 # ---- build ----
-FROM rust:1.90.0 AS build-env
+FROM rust:1.91.0 AS build-env
 WORKDIR /app
 
 # Will be provided by buildx
