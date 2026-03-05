@@ -23,7 +23,7 @@ jobs:
 
       # Fast local build (amd64 only) for the healthcheck
       - name: Build (amd64, load locally)
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           platforms: linux/amd64
@@ -40,7 +40,7 @@ jobs:
         run: docker run -e SYNC_USER1=test_user_name:test_user_password -d afrima/anki-sync-server:latest | timeout 60s sh -c 'until docker ps | grep afrima/anki-sync-server:latest | grep -q healthy; do echo "Waiting for container to be healthy..."; sleep 2; done'
 
       - name: Build & Push (multi-arch)
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           platforms: linux/amd64,linux/arm64
