@@ -25,7 +25,7 @@ jobs:
 
       # Fast local build (amd64 only) for the healthcheck
       - name: Build (amd64, load locally)
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           platforms: linux/amd64
@@ -54,7 +54,7 @@ jobs:
 
       # Multi-arch build & push (only after healthcheck passes)
       - name: Build & Push (multi-arch)
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           platforms: linux/amd64,linux/arm64
