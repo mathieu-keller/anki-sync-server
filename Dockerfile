@@ -43,8 +43,8 @@ LABEL org.opencontainers.image.created=$NOW \
       org.opencontainers.image.url="https://github.com/mathieu-keller/anki-sync-server" \
       org.opencontainers.image.source="https://github.com/ankitects/anki/tree/main" \
       org.opencontainers.image.documentation="https://docs.ankiweb.net/sync-server.html" \
-      org.opencontainers.image.version="25.09.4" \
-      org.opencontainers.image.revision="25.09.4" \
+      org.opencontainers.image.version="26.05" \
+      org.opencontainers.image.revision="26.05" \
       org.opencontainers.image.licenses="GNU AGPL-3.0-or-later" \
       org.opencontainers.image.vendor="Ankitects (Original Source Code); Docker Image by Mathieu Keller" \
       org.opencontainers.image.base.name="gcr.io/distroless/static-debian12:nonroot" org.opencontainers.image.base.digest="sha256:d093aa3e30dbadd3efe1310db061a14da60299baff8450a17fe0ccc514a16639"
